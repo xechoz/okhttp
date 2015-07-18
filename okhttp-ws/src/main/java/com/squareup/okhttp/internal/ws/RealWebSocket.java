@@ -15,6 +15,7 @@
  */
 package com.squareup.okhttp.internal.ws;
 
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.internal.NamedRunnable;
 import com.squareup.okhttp.ws.WebSocket;
 import com.squareup.okhttp.ws.WebSocketListener;
@@ -50,6 +51,7 @@ public abstract class RealWebSocket implements WebSocket {
     writer = new WebSocketWriter(isClient, sink, random);
     reader = new WebSocketReader(isClient, source, new FrameCallback() {
       @Override public void onMessage(BufferedSource source, PayloadType type) throws IOException {
+
         listener.onMessage(source, type);
       }
 
@@ -100,14 +102,10 @@ public abstract class RealWebSocket implements WebSocket {
     }
   }
 
-  @Override public BufferedSink newMessageSink(PayloadType type) {
+  @Override public void sendMessage(RequestBody message) throws IOException {
     if (writerSentClose) throw new IllegalStateException("closed");
-    return writer.newMessageSink(type);
-  }
-
-  @Override public void sendMessage(PayloadType type, Buffer payload) throws IOException {
-    if (writerSentClose) throw new IllegalStateException("closed");
-    writer.sendMessage(type, payload);
+    // TODO map content type to text/binary.
+    writer.newMessageSink(PayloadType.TEXT);
   }
 
   @Override public void sendPing(Buffer payload) throws IOException {

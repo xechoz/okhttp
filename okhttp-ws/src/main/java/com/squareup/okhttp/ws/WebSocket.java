@@ -15,9 +15,9 @@
  */
 package com.squareup.okhttp.ws;
 
+import com.squareup.okhttp.RequestBody;
 import java.io.IOException;
 import okio.Buffer;
-import okio.BufferedSink;
 
 /** Blocking interface to connect and write to a web socket. */
 public interface WebSocket {
@@ -30,21 +30,11 @@ public interface WebSocket {
   }
 
   /**
-   * Stream a message payload to the server of the specified {code type}.
-   * <p>
-   * You must call {@link BufferedSink#close() close()} to complete the message. Calls to
-   * {@link BufferedSink#flush() flush()} write a frame fragment. The message may be empty.
+   * Send a message payload to the server.
    *
    * @throws IllegalStateException if not connected, already closed, or another writer is active.
    */
-  BufferedSink newMessageSink(WebSocket.PayloadType type);
-
-  /**
-   * Send a message payload to the server of the specified {@code type}.
-   *
-   * @throws IllegalStateException if not connected, already closed, or another writer is active.
-   */
-  void sendMessage(WebSocket.PayloadType type, Buffer payload) throws IOException;
+  void sendMessage(RequestBody message) throws IOException;
 
   /**
    * Send a ping to the server with optional payload.
